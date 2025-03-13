@@ -22,26 +22,44 @@ namespace EfOwnsManyBug.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EfOwnsManyBug.Post", b =>
+            modelBuilder.Entity("EfOwnsManyBug.Models.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
-                        .HasDefaultValue("");
 
                     b.HasKey("Id");
 
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("EfOwnsManyBug.Post", b =>
+            modelBuilder.Entity("EfOwnsManyBug.Models.Post", b =>
                 {
-                    b.OwnsMany("EfOwnsManyBug.PostTag", "Tags", b1 =>
+                    b.OwnsOne("EfOwnsManyBug.Models.PostBody", "Body", b1 =>
+                        {
+                            b1.Property<Guid>("PostId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Slices")
+                                .IsRequired()
+                                .HasMaxLength(8000)
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .ValueGeneratedOnAdd()
+                                .HasMaxLength(8000)
+                                .HasColumnType("nvarchar(max)")
+                                .HasDefaultValue("");
+
+                            b1.HasKey("PostId");
+
+                            b1.ToTable("Posts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostId");
+                        });
+
+                    b.OwnsMany("EfOwnsManyBug.Models.PostTag", "Tags", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -66,6 +84,9 @@ namespace EfOwnsManyBug.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("PostId");
                         });
+
+                    b.Navigation("Body")
+                        .IsRequired();
 
                     b.Navigation("Tags");
                 });

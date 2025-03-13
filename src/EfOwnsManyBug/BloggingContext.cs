@@ -1,5 +1,7 @@
 ﻿using EfOwnsManyBug.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Text.Json;
 
 namespace EfOwnsManyBug;
 
@@ -21,20 +23,7 @@ public class BloggingContext : DbContext
                     ctx.Set<Post>().Add(
                         new Post(PostId)
                         {
-                            Body = "my test post",
-                            Tags = new List<PostTag>
-                            {
-                                new PostTag
-                                {
-                                    PostId = PostId,
-                                    Tag = "#tag-one"
-                                },
-                                new PostTag
-                                {
-                                    PostId =PostId,
-                                    Tag = "#tag-two"
-                                },
-                            }
+                            Body = "my test #post"
                         }
                     );
                     ctx.SaveChanges();
@@ -53,11 +42,30 @@ public class BloggingContext : DbContext
             .HasConversion(v => v.Value, v => new PostId(v))
             .ValueGeneratedNever();
 
-        postBuilder.Property(d => d.Body)
-            .IsRequired()
-            .HasDefaultValue(string.Empty)
-            .HasMaxLength(1000);
+        var serializerOptions = new JsonSerializerOptions();
+        postBuilder.OwnsOne(
+            d => d.Body,
+            body =>
+            {
+                body.Property(p => p.Value)
+                    .IsRequired()
+                    .HasDefaultValue(string.Empty)
+                    .HasMaxLength(8000);
 
+                body.Property(p => p.Slices)
+                    .IsRequired()
+                    .HasMaxLength(8000)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, serializerOptions),
+                        v => JsonSerializer.Deserialize<List<PostSlice>>(v, serializerOptions) ?? new List<PostSlice>(),
+                        new ValueComparer<IReadOnlyList<PostSlice>>(
+                            (c1, c2) => (c1 ?? Enumerable.Empty<PostSlice>()).SequenceEqual(c2 ?? Enumerable.Empty<PostSlice>()),
+                            c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                            c => c.ToList()
+                        )
+                    );
+            }
+        );
         postBuilder.OwnsMany(
             d => d.Tags,
             tags =>

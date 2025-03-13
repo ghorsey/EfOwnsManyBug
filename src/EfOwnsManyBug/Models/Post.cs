@@ -9,7 +9,16 @@ public class Post(PostId id) : EntityBase<PostId>(id)
     {
     }
 
-    public string Body { get; set; } = string.Empty;
+    public PostBody Body { get; set; } = string.Empty;
 
-    public List<PostTag> Tags { get; init; } = new();
+    public IReadOnlyList<PostTag> Tags
+    {
+        get => this.Body.Slices.Select(
+            s => new PostTag
+            {
+                PostId = this.Id,
+                Tag = s.Text
+            }).Distinct().ToList();
+        set => _ = value;
+    }
 }

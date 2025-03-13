@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EfOwnsManyBug.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,8 @@ namespace EfOwnsManyBug.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Body = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false, defaultValue: "")
+                    Body_Value = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false, defaultValue: ""),
+                    Body_Slices = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,9 +44,9 @@ namespace EfOwnsManyBug.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostTag_PostId",
+                name: "IX_PostTag_PostId_Tag",
                 table: "PostTag",
-                column: "PostId");
+                columns: new[] { "PostId", "Tag" });
         }
 
         /// <inheritdoc />
