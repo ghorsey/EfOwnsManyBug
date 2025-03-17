@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Text.Json;
 
-var ctx = new BloggingContext();
-var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace));
+var ctx = new BloggingContext(loggerFactory);
 var logger = loggerFactory.CreateLogger("Program");
 var uow = new UnitOfWork(ctx, loggerFactory);
 
@@ -23,7 +23,7 @@ await uow.ExecuteInResilientTransactionAsync(
 
         var seralizerSettings = new JsonSerializerOptions
         {
-            IncludeFields = true,
+           WriteIndented = true
         };
 
         Console.WriteLine("The found POST with the owned collection:");

@@ -1,18 +1,28 @@
-﻿using EfOwnsManyBug.Models;
+﻿using C3.Blocks.Repository.MsSql;
+using EfOwnsManyBug.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace EfOwnsManyBug;
 
-public class BloggingContext : DbContext
+public class BloggingContext(ILoggerFactory loggerFactory) : DbContext
 {
+    private readonly ILoggerFactory loggerFactory = loggerFactory;
     public static readonly PostId PostId = new PostId(Guid.Parse("7EE68A49-843E-4274-86B3-B80CFFE8D407"));
 
     internal DbSet<Post> Posts { get; set; }
 
+    public BloggingContext()
+        : this(LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace)))
+    {
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder
+            .UseLoggerFactory(this.loggerFactory)
+            .EnableSensitiveDataLogging()
             .UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\geoff\code\ghorsey\EfOwnsManyBug\src\EfOwnsManyBug\Data\SampleDatabase.mdf;Integrated Security=True")
             .UseSeeding((ctx, _) =>
             {
@@ -34,16 +44,19 @@ public class BloggingContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        var postBuilder = modelBuilder.Entity<Post>();
+        modelBuilder.Ignore<PostSlice>();
+        modelBuilder.FixDateTimeOffsetForSqlite(this.Database.ProviderName);
 
-        postBuilder.HasKey(d => d.Id);
-        postBuilder.Property(d => d.Id)
+        var builder = modelBuilder.Entity<Post>();
+
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Id)
             .IsRequired()
             .HasConversion(v => v.Value, v => new PostId(v))
             .ValueGeneratedNever();
 
         var serializerOptions = new JsonSerializerOptions();
-        postBuilder.OwnsOne(
+        builder.OwnsOne(
             d => d.Body,
             body =>
             {
@@ -66,7 +79,7 @@ public class BloggingContext : DbContext
                     );
             }
         );
-        postBuilder.OwnsMany(
+        builder.OwnsMany(
             d => d.Tags,
             tags =>
             {
