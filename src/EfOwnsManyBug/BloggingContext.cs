@@ -2,10 +2,8 @@
 using EfOwnsManyBug.Models;
 using EfOwnsManyBug.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace EfOwnsManyBug;
 
@@ -27,7 +25,6 @@ public class BloggingContext(ILoggerFactory loggerFactory, IConfiguration config
             .UseLoggerFactory(this.loggerFactory)
             .EnableSensitiveDataLogging()
             .UseSqlServer(config.GetValue<string>("ConnectionString"))
-            //.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\geoff\code\ghorsey\EfOwnsManyBug\src\EfOwnsManyBug\Data\SampleDatabase.mdf;Integrated Security=True")
             .UseSeeding((ctx, _) =>
             {
                 var post = ctx.Set<Post>().Find(PostId);
