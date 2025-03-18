@@ -1,6 +1,5 @@
 ﻿using C3.Blocks.Repository.MsSql;
 using EfOwnsManyBug.Models;
-using EfOwnsManyBug.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
