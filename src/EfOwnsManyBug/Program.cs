@@ -5,15 +5,16 @@ using System.Data;
 using System.Text.Json;
 
 var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace));
-var ctx = new BloggingContext(loggerFactory);
+var ctx = new BloggingContext();
 var logger = loggerFactory.CreateLogger("Program");
 var uow = new UnitOfWork(ctx, loggerFactory);
 
 var ct = new CancellationToken();
+
 await uow.ExecuteInResilientTransactionAsync(
     async () =>
     {
-        var post = await uow.PostRepository.FindAsync(BloggingContext.PostId, ct);
+        var post = await uow.PostSummaryRepository.FindAsync(BloggingContext.PostId, ct);
 
         if (post == null)
         {
@@ -21,9 +22,9 @@ await uow.ExecuteInResilientTransactionAsync(
             return false;
         }
 
-        var seralizerSettings = new JsonSerializerOptions
+        JsonSerializerOptions seralizerSettings = new()
         {
-           WriteIndented = true
+            WriteIndented = true
         };
 
         Console.WriteLine("The found POST with the owned collection:");
@@ -31,7 +32,7 @@ await uow.ExecuteInResilientTransactionAsync(
 
         Console.WriteLine("");
         Console.WriteLine("Attempting to delete the record");
-        await uow.PostRepository.RemoveAsync(post);
+        await uow.PostSummaryRepository.RemoveAsync(post);
         await uow.CommitAsync();
         return true;
     },

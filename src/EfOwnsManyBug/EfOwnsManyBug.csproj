@@ -5,17 +5,19 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>e7ceb0c2-ac8d-4376-907e-d65f07f0bb15</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeCorrectCollective.Blocks.Domain" Version="1.0.17" />
-    <PackageReference Include="CodeCorrectCollective.Blocks.Repository.Abstractions" Version="1.0.17" />
-    <PackageReference Include="CodeCorrectCollective.Blocks.Repository.MsSql" Version="1.0.17" />
+    <PackageReference Include="CodeCorrectCollective.Blocks.Domain" Version="1.0.18" />
+    <PackageReference Include="CodeCorrectCollective.Blocks.Repository.Abstractions" Version="1.0.18" />
+    <PackageReference Include="CodeCorrectCollective.Blocks.Repository.MsSql" Version="1.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.3" />
   </ItemGroup>
 

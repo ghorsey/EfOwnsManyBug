@@ -25,7 +25,26 @@ namespace EfOwnsManyBug.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PostTag",
+                name: "PostSummary",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Body_Value = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false, defaultValue: ""),
+                    Body_Slices = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostSummary", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostSummary_Posts_Id",
+                        column: x => x.Id,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostSummaryTag",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -34,18 +53,18 @@ namespace EfOwnsManyBug.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostTag", x => x.Id);
+                    table.PrimaryKey("PK_PostSummaryTag", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PostTag_Posts_PostId",
+                        name: "FK_PostSummaryTag_PostSummary_PostId",
                         column: x => x.PostId,
-                        principalTable: "Posts",
+                        principalTable: "PostSummary",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostTag_PostId_Tag",
-                table: "PostTag",
+                name: "IX_PostSummaryTag_PostId_Tag",
+                table: "PostSummaryTag",
                 columns: new[] { "PostId", "Tag" });
         }
 
@@ -53,7 +72,10 @@ namespace EfOwnsManyBug.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PostTag");
+                name: "PostSummaryTag");
+
+            migrationBuilder.DropTable(
+                name: "PostSummary");
 
             migrationBuilder.DropTable(
                 name: "Posts");

@@ -32,6 +32,16 @@ namespace EfOwnsManyBug.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("EfOwnsManyBug.Models.PostSummary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PostSummary");
+                });
+
             modelBuilder.Entity("EfOwnsManyBug.Models.Post", b =>
                 {
                     b.OwnsOne("EfOwnsManyBug.Models.PostBody", "Body", b1 =>
@@ -59,7 +69,19 @@ namespace EfOwnsManyBug.Migrations
                                 .HasForeignKey("PostId");
                         });
 
-                    b.OwnsMany("EfOwnsManyBug.Models.PostTag", "Tags", b1 =>
+                    b.Navigation("Body")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EfOwnsManyBug.Models.PostSummary", b =>
+                {
+                    b.HasOne("EfOwnsManyBug.Models.Post", null)
+                        .WithOne()
+                        .HasForeignKey("EfOwnsManyBug.Models.PostSummary", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsMany("EfOwnsManyBug.Models.PostSummaryTag", "Tags", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -79,10 +101,35 @@ namespace EfOwnsManyBug.Migrations
 
                             b1.HasIndex("PostId", "Tag");
 
-                            b1.ToTable("PostTag");
+                            b1.ToTable("PostSummaryTag");
 
                             b1.WithOwner()
                                 .HasForeignKey("PostId");
+                        });
+
+                    b.OwnsOne("EfOwnsManyBug.Models.PostBody", "Body", b1 =>
+                        {
+                            b1.Property<Guid>("PostSummaryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Slices")
+                                .IsRequired()
+                                .HasMaxLength(8000)
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .ValueGeneratedOnAdd()
+                                .HasMaxLength(8000)
+                                .HasColumnType("nvarchar(max)")
+                                .HasDefaultValue("");
+
+                            b1.HasKey("PostSummaryId");
+
+                            b1.ToTable("PostSummary");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostSummaryId");
                         });
 
                     b.Navigation("Body")
