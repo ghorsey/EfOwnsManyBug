@@ -8,6 +8,6 @@ Microsoft.Data.SqlClient.SqlException (0x80131904): The INSERT statement conflic
 ## Setup
 1. In the root folder run `dotnet tool restore`.
 2. Create a SQL based database. (On my local setup I created `Data\SampleDatabase.mdf` and used a connection string with the full path to the \*.mdf file)
-3. Store the connection string in a secret named `ConnectionString` so the `BloggingDbContext` can have access to the database.3
+3. Store the connection string in a secret named `ConnectionString` so the `BloggingDbContext` can have access to the database.
 4. Execute `dotnet ef -p .\src\EfOwnsManyBug\ database update` to seed the database with the test data.
 5. Exectue `dotnet run --project .\src\EfOwnsManyBug\` to experience the bug.
