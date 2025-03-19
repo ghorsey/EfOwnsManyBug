@@ -1,5 +1,8 @@
 # Example of a bug in EF Core
 There is an issue with owns many and deleting the parent where the owned collection attempts to be re-inserted.
+
+Created for the following defect: https://github.com/dotnet/efcore/issues/35809
+
 This scenario throws the following exception:
 ```shell
 Microsoft.Data.SqlClient.SqlException (0x80131904): The INSERT statement conflicted with the FOREIGN KEY constraint "FK_PostSummaryTag_PostSummary_PostId". The conflict occurred in database "...\EFOWNSMANYBUG\SRC\EFOWNSMANYBUG\DATA\SAMPLEDATABASE.MDF", table "dbo.PostSummary", column 'Id'.
